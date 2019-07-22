@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      var map;
+      var marker;
+      var point;
+      var iconBase;
+      var icons;
+
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 7,
+          center: new google.maps.LatLng(2.8,-187.3),
+          mapTypeId: 'terrain',
+          styles: [
+            {elementType: 'geometry', stylers: [{color: '#928e85'}]},
+            {elementType: 'labels.text.stroke', stylers: [{color: '#928e85'}]},
+            {elementType: 'labels.text.fill', stylers: [{color: '#ffffff'}]},
+            {
+              featureType: 'administrative.locality',
+              elementType: 'labels.text.fill',
+              stylers: [{color: '#222222'}]
+            },
+            {
+              featureType: 'poi',
+              elementType: 'labels.text.fill',
+              stylers: [{color: '#d59563'}]
+            },
+            {
+              featureType: 'poi.park',
+              elementType: 'geometry',
+              stylers: [{color: '#928e85'}]
+            },
+            {
+              featureType: 'poi.park',
+              elementType: 'labels.text.fill',
+              stylers: [{color: '#222222'}]
+            },
+            {
+              featureType: 'road',
+              elementType: 'geometry',
+              stylers: [{color: '#38414e'}]
+            },
+            {
+              featureType: 'road',
+              elementType: 'geometry.stroke',
+              stylers: [{color: '#212a37'}]
+            },
+            {
+              featureType: 'road',
+              elementType: 'labels.text.fill',
+              stylers: [{color: '#9ca5b3'}]
+            },
+            {
+              featureType: 'road.highway',
+              elementType: 'geometry',
+              stylers: [{color: '#746855'}]
+            },
+            {
+              featureType: 'road.highway',
+              elementType: 'geometry.stroke',
+              stylers: [{color: '#1f2835'}]
+            },
+            {
+              featureType: 'road.highway',
+              elementType: 'labels.text.fill',
+              stylers: [{color: '#f3d19c'}]
+            },
+            {
+              featureType: 'transit',
+              elementType: 'geometry',
+              stylers: [{color: '#2f3948'}]
+            },
+            {
+              featureType: 'transit.station',
+              elementType: 'labels.text.fill',
+              stylers: [{color: '#d59563'}]
+            },
+            {
+              featureType: 'water',
+              elementType: 'geometry',
+              stylers: [{color: '#1fc8ff'}]
+            },
+            {
+              featureType: 'water',
+              elementType: 'labels.text.fill',
+              stylers: [{color: '#515c6d'}]
+            },
+            {
+              featureType: 'water',
+              elementType: 'labels.text.stroke',
+              stylers: [{color: '#17263c'}]
+            }
+          ]
+        });
+
+      // customized markers
+      // point = 'images/pink-dot.svg'
+
+        // Create a <script> tag and set the USGS URL as the source.
+        var script = document.createElement('script');
+
+        // script.src = 'https://developers.google.com/maps/documentation/javascript/examples/json/earthquake_GeoJSONP.js';
+        
+        script.src = 'marine-debris.js';
+        document.getElementsByTagName('head')[0].appendChild(script);
+
+        iconBase =
+            'images/';
+
+        icons = {
+          'PLASTIC': {
+            icon: iconBase + 'pink-dot.svg'
+          },
+          'METAL': {
+            icon: iconBase + 'blue-dot.svg'
+          },
+          'FISHING GEAR': {
+            icon: iconBase + 'green-dot.svg'
+          },
+          'PAPER & LUMBER': {
+            icon: iconBase + 'purple-dot.svg'
+          },
+          'GLASS': {
+            icon: iconBase + 'red-dot.svg'
+          },
+          'RUBBER': {
+            icon: iconBase + 'orange-dot.svg'
+          },
+          'CLOTH': {
+            icon: iconBase + 'lt-green-dot.svg'
+          },
+          'OTHER ITEMS': {
+            icon: iconBase + 'yellow-dot.svg'
+          },
+        };
+
+        // console.log(icons)
+      }
+      
+      // marks each spot from API according to waste type
+      window.eqfeed_callback = function(results) {
+        for (var i = 0; i < results.dataMap.length; i++) {
+          var latitude = results.dataMap[i].Latitude;
+          var longitude = results.dataMap[i].Longitude;
+          var location = results.dataMap[i].Location;
+          var material = results.dataMap[i].type;
+          // console.log(material);
+          // console.log(location)
+
+          var latLng = new google.maps.LatLng(latitude,longitude);
+          marker = new google.maps.Marker({
+            position: latLng,
+            icon: icons[results.dataMap[i].type].icon,
+            map: map
+          });
+          marker.addListener('click', function() {
+            infowindow.open(map, marker);
+          }); 
+        }
+      }
+
+      
+
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYa_TsxBrKqJ5P2-pv1u8BpsgD3LZTcyo&callback=initMap">
+    </script>
+    </script>
+  </body>
+</html>
